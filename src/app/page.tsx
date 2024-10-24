@@ -1,101 +1,151 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import axios from 'axios';
+import Image from 'next/image';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { CurrencyDollarIcon, LinkIcon, ClipboardIcon } from '@heroicons/react/24/solid';
+import { CircleLoader } from 'react-spinners';
+
+export default function HomePage() {
+  const [sessionId, setSessionId] = useState('');
+  const [amount, setAmount] = useState(0);
+  const [paymentUrl, setPaymentUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sessionCreated, setSessionCreated] = useState(false);
+  const [sessionUpdated, setSessionUpdated] = useState(false);
+
+  // Function to create a new session
+  const createSession = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post('/api/create-session');
+      const data = res.data;
+      setSessionId(data.session.id);
+      setSessionCreated(true);
+      toast.success('Session created successfully');
+    } catch (error) {
+      console.error('Error creating session:', error);
+      toast.error('Failed to create session');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to update the session
+  const updateSession = async () => {
+
+    if (amount <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post('/api/update-session', { sessionId, amount });
+      const newPaymentUrl = `${window.location.origin}/api/payment-form?sessionId=${sessionId}`;
+      setPaymentUrl(newPaymentUrl);
+      setSessionUpdated(true);
+      toast.success('Session updated successfully');
+    } catch (error) {
+      console.error('Error updating session:', error);
+      toast.error('Failed to update session');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to copy the payment URL to clipboard
+  const copyUrl = () => {
+    navigator.clipboard.writeText(paymentUrl);
+    toast.info('Payment URL copied to clipboard!');
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-orange-400 to-orange-500 px-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full">
+          <div className="text-center">
+            <Image src="/artema-logo.png" alt="Company Logo" width={150} height={150} className="mx-auto mb-6" />
+            <h1 className="text-4xl font-bold text-orange-400 mb-8">AMG Payment Gateway</h1>
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {!sessionCreated && (
+            <button
+              className={`w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-500 transition-colors mb-6 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={createSession}
+              disabled={loading}
+            >
+              {loading ? <CircleLoader size={20} color="#ffffff" /> : 'Create Session'}
+            </button>
+          )}
+
+          {sessionCreated && !sessionUpdated && (
+            <>
+              {/* Amount Input */}
+              <p className='text-orange-500 font-medium text-lg mb-2'>Amount**</p>
+              <div className={`relative flex items-center border-2 rounded-lg mb-6 shadow-lg transition duration-300 ${amount <= 0 ? 'border-orange-500 bg-red-50' : 'border-gray-300 bg-white'}`}>
+                <CurrencyDollarIcon className="h-6 w-6 text-gray-400 ml-3" />
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(parseInt(e.target.value, 10))}
+                  onFocus={(e) => e.target.select()}
+                  placeholder="Enter Amount"
+                  className="w-full py-3 px-4 text-lg text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-orange-400 focus:border-orange-500 rounded-r-lg focus:outline-none transition duration-200"
+                />
+              </div>
+
+
+              {/* Update Session Button */}
+              <button
+                className={`w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-500 transition-colors mb-6 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={updateSession}
+                disabled={loading}
+              >
+                {loading ? <CircleLoader size={20} color="#ffffff" /> : 'Update Session'}
+              </button>
+            </>
+          )}
+
+          {sessionUpdated && (
+            <>
+              {/* Read-only Amount Display */}
+              <div className={`relative flex items-center border-2 rounded-lg mb-6 shadow-sm border-gray-300`}>
+                <CurrencyDollarIcon className="h-6 w-6 text-gray-400 ml-3" />
+                <input
+                  type="number"
+                  value={amount}
+                  readOnly
+                  className="w-full py-3 px-4 text-lg text-gray-500 bg-gray-50 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+
+              {/* Payment URL Display */}
+              <div className="relative flex items-center border-2 rounded-lg mb-6 shadow-sm bg-gray-50">
+                <LinkIcon className="h-6 w-6 text-gray-400 ml-3" />
+                <input
+                  type="text"
+                  value={paymentUrl}
+                  readOnly
+                  className="w-full py-3 px-4 text-lg text-gray-500 bg-gray-50 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+
+              {/* Copy URL Button */}
+              <button
+                className="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-500 transition-colors flex items-center justify-center"
+                onClick={copyUrl}
+              >
+                <ClipboardIcon className="h-5 w-5 mr-2" />
+                Copy URL
+              </button>
+            </>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+
+      <ToastContainer />
+    </>
   );
 }
