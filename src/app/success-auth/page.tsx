@@ -9,7 +9,8 @@ const PaymentStatus: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-
+  
+  
   // Animation state
   const [showSuccessCircle] = useState<boolean>(true);
 
