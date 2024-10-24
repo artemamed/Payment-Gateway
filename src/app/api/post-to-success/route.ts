@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    console.log("I am in the post-to-success api");
     
     // Extract query parameters from the request URL
     const url = new URL(request.url);
@@ -14,7 +13,7 @@ export async function POST(request: Request) {
     console.log(orderId);
 
     // Construct the redirect URL
-    const successAuthUrl = `http://localhost:3000/success-auth?sessionId=${sessionId}&orderId=${orderId}`;
+    const successAuthUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/success-auth?sessionId=${sessionId}&orderId=${orderId}`;
     console.log(successAuthUrl);
     
     // Redirect the user to the success-auth page

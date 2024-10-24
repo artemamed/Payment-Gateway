@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         ipAddress: "182.185.178.141", // You might want to dynamically get this
       },
       authentication: {
-        redirectResponseUrl: `http://localhost:3000/api/post-to-success?sessionId=${sessionId}&orderId=${orderId}`,
+        redirectResponseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post-to-success?sessionId=${sessionId}&orderId=${orderId}`,
       },
       order: {
         amount: 1, // This amount should come from your session or business logic
