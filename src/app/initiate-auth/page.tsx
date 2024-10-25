@@ -66,7 +66,7 @@ const NextStep: React.FC = () => {
         <div className="mt-6 space-y-4">
           <p className="flex items-center text-xl text-gray-900 transition-transform duration-300">
             <FaIdCard className="mr-4 text-3xl text-blue-700 transform hover:scale-110 transition-transform duration-200" />
-            <strong>Order ID:</strong> {orderId || 'N/A'}
+            <strong>Order ID:</strong> {orderId || 'Loading..'}
           </p>
         
         </div>
