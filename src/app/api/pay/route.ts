@@ -4,13 +4,17 @@ export async function POST(req: Request) {
     console.log("I am in the payment API function.");
 
     try {
-        const { sessionId, orderId } = await req.json();  // Get sessionId and orderId from the frontend
+        const { sessionId, orderId, amount } = await req.json();  // Get sessionId and orderId from the frontend
         console.log("Session ID:", sessionId);
         console.log("Order ID:", orderId);
+         console.log("Amount:", amount)
+ 
+
         const MID= process.env.MERCHANT_ID;
+        // const storedAmount = Number(localStorage.getItem('paymentAmount'));
         const Pass = process.env.MERCHANT_PASS;
         console.log(MID);
-        console.log(Pass);
+        // console.log(storedAmount);
         // Construct the API URL using the orderId
         const apiUrl = `${process.env.URL}.gateway.mastercard.com/api/rest/version/74/merchant/${MID}/order/${orderId}/transaction/${orderId+1}`;
         
@@ -21,7 +25,7 @@ export async function POST(req: Request) {
                 transactionId: orderId,  // Use orderId as the transactionId
             },
             order: {
-                amount: 1,  // Specify the amount here
+                amount: amount,  // Specify the amount here
                 currency: `${process.env.CURRENCY}`,  // Specify the currency
             },
             session: {

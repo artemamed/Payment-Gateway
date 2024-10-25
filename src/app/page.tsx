@@ -40,10 +40,13 @@ export default function HomePage() {
       toast.error('Please enter a valid amount');
       return;
     }
+      // // Save amount in local storage
+      // localStorage.setItem('paymentAmount', amount.toString());
+
     setLoading(true);
     try {
       await axios.post('/api/update-session', { sessionId, amount });
-      const newPaymentUrl = `${window.location.origin}/api/payment-form?sessionId=${sessionId}`;
+      const newPaymentUrl = `${window.location.origin}/api/payment-form?sessionId=${sessionId}&amount=${amount}`;
       setPaymentUrl(newPaymentUrl);
       setSessionUpdated(true);
       toast.success('Session updated successfully');

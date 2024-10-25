@@ -8,12 +8,14 @@ export async function POST(request: Request) {
     const url = new URL(request.url);
     const sessionId = url.searchParams.get("sessionId") || "DEFAULT_SESSION_ID";
     const orderId = url.searchParams.get("orderId") || "DEFAULT_orderId";
-    
+    const amount = url.searchParams.get("amount") || 0 ;
+
+
     console.log(sessionId);
     console.log(orderId);
 
     // Construct the redirect URL
-    const successAuthUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/success-auth?sessionId=${sessionId}&orderId=${orderId}`;
+    const successAuthUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/success-auth?sessionId=${sessionId}&orderId=${orderId}&amount=${amount}`;
     console.log(successAuthUrl);
     
     // Redirect the user to the success-auth page

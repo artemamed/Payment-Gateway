@@ -4,15 +4,18 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     console.log("i am in the authenticate payer api");
+    console.log(process.env.NEXT_PUBLIC_BASE_URL);
     // Get the request body
-    const { sessionId, orderId } = await request.json();
+    const { sessionId, orderId, amount } = await request.json();
+    // const storedAmount = Number(localStorage.getItem('paymentAmount'));
+    const MID= process.env.MERCHANT_ID;
+    const Pass = process.env.MERCHANT_PASS;
+
       console.log(sessionId);
       console.log(orderId);
-      const MID= process.env.MERCHANT_ID;
-      const Pass = process.env.MERCHANT_PASS;
       console.log(MID);
       console.log(Pass);
-
+      console.log("amount!!!!!!!!!!!!", amount);
       
     // Define the API URL
     const apiUrl = `${process.env.URL}.gateway.mastercard.com/api/rest/version/74/merchant/${MID}/order/${orderId}/transaction/${orderId}`;
@@ -35,10 +38,10 @@ export async function POST(request: Request) {
         ipAddress: "182.185.178.141", // You might want to dynamically get this
       },
       authentication: {
-        redirectResponseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post-to-success?sessionId=${sessionId}&orderId=${orderId}`,
+        redirectResponseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post-to-success?sessionId=${sessionId}&orderId=${orderId}&amount=${amount}`,
       },
       order: {
-        amount: 1, // This amount should come from your session or business logic
+        amount: amount, // This amount should come from your session or business logic
         currency: `${process.env.CURRENCY}`,
       },
       session: {

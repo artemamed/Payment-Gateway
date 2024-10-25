@@ -3,10 +3,16 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const sessionId = url.searchParams.get("sessionId") || "DEFAULT_SESSION_ID";
+  const amount = url.searchParams.get("amount") || "0";  
   const MID = process.env.MERCHANT_ID;
   const Pass = process.env.MERCHANT_PASS;
+
+  console.log(`Session ID: ${sessionId}`);
+  console.log(`Amount: ${amount}`);
   console.log(MID);
   console.log(Pass);
+
+
   const orderId = generateUniqueId();
   function generateUniqueId() {
     return Math.floor(Math.random() * 1000000).toString();
@@ -324,7 +330,7 @@ export async function GET(request: Request) {
                       
                       if (data && !data.error) {
                         console.log('Authentication initiated successfully!');
-                        window.location.href = '/initiate-auth?orderId=${orderId}&sessionId=' + response.session.id;
+                        window.location.href = '/initiate-auth?orderId=${orderId}&amount=${amount}&sessionId=' + response.session.id ;
                       } else {
                         showToast('Authentication Failed: ' + (data.error || 'Unknown error'));
                       }

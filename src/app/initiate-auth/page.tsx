@@ -24,6 +24,7 @@ const NextStep: React.FC = () => {
     }
   }, []);
 
+  
   const handleAuthenticatePayer = async () => {
     try {
       setLoading(true);
