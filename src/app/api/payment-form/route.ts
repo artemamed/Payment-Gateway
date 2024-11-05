@@ -5,12 +5,12 @@ export async function GET(request: Request) {
   const sessionId = url.searchParams.get("sessionId") || "DEFAULT_SESSION_ID";
   const amount = url.searchParams.get("amount") || "0";  
   const MID = process.env.MERCHANT_ID;
-  const Pass = process.env.MERCHANT_PASS;
+  // const Pass = process.env.MERCHANT_PASS;
 
-  console.log(`Session ID: ${sessionId}`);
-  console.log(`Amount: ${amount}`);
-  console.log(MID);
-  console.log(Pass);
+  // console.log(`Session ID: ${sessionId}`);
+  // console.log(`Amount: ${amount}`);
+  // console.log(MID);
+  // console.log(Pass);
 
 
   const orderId = generateUniqueId();
@@ -315,7 +315,7 @@ export async function GET(request: Request) {
                   document.getElementById("loader").style.display = "none";
 
                   if (response.status && response.status === "ok") {
-                    console.log("Session updated with updated card data: " + response.session.id);
+                    // console.log("Session updated with updated card data: " + response.session.id);
 
                     fetch('/api/initiate-auth', {
                       method: 'POST',
@@ -326,22 +326,28 @@ export async function GET(request: Request) {
                     })
                     .then((res) => res.json())
                     .then((data) => {
-                      console.log("Initiate Auth API Response:", data);
+                      // console.log("Initiate Auth API Response:", data);
                       
                       if (data && !data.error) {
-                        console.log('Authentication initiated successfully!');
+                        // console.log('Authentication initiated successfully!');
                         window.location.href = '/initiate-auth?orderId=${orderId}&amount=${amount}&sessionId=' + response.session.id ;
                       } else {
                         showToast('Authentication Failed: ' + (data.error || 'Unknown error'));
                       }
                     })
                     .catch((error) => {
-                      console.error("API Call Error:", error);
+                      // console.error("API Call Error:", error);
                       showToast('API Call Error: ' + error.message);
                     });
                   } else {
-                    console.error("Session update failed:", response);
-                    showToast('Fill Card Details Properly Or Session Update Failed !!!');
+                    // console.error("Session update failed:", response);
+                    if(response.status == 'fields_in_error'){
+                        showToast('Inalid Card Details');
+                    }else if(response.errors.message) {
+                        showToast(response.errors.message);
+                    }else{
+                        showToast('Error Processing the Request.');
+                    }
                   }
                 },
               },

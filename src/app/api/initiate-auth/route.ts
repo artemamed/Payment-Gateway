@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-    console.log("I am in initiate authentication api  function ");
+    // console.log("I am in initiate authentication api  function ");
    
   try {
     const { sessionId , orderId} = await req.json();  // Get sessionId from the frontend
     // const orderId = generateUniqueId();
     // const transactionId = generateUniqueId(); // Create a unique transaction ID
 
-     console.log("i amm min the auth api try function @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
-      console.log(sessionId);
-      console.log(orderId);
+    //  console.log("i amm min the auth api try function @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
+    //   console.log(sessionId);
+    //   console.log(orderId);
       const MID= process.env.MERCHANT_ID;
      const Pass = process.env.MERCHANT_PASS;
-     console.log(MID);
-     console.log(Pass);
+    //  console.log(MID);
+    //  console.log(Pass);
     const apiUrl = `${process.env.URL}.gateway.mastercard.com/api/rest/version/74/merchant/${MID}/order/${orderId}/transaction/${orderId}`;
     
     const body = {
@@ -48,16 +48,15 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify(body),  // Send the request body as JSON
     });
-
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error('Error initiating authentication');
+        return NextResponse.json(data, { status: response.status });
     }
 
-    const data = await response.json();
-    console.log(data);
+    // console.log(data);
     return NextResponse.json(data);  // Return API response back to the frontend
   } catch (error) {
-    console.error('Error initiating authentication:', error);
+    // console.error('Error initiating authentication:', error);
     return NextResponse.json({ error: 'Authentication initiation failed' }, { status: 500 });
   }
 }

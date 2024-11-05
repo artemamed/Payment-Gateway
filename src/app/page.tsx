@@ -18,16 +18,19 @@ export default function HomePage() {
 
   // Function to create a new session
   const createSession = async () => {
+    // console.log()
     setLoading(true);
     try {
       const res = await axios.post('/api/create-session');
       const data = res.data;
       setSessionId(data.session.id);
       setSessionCreated(true);
+      // console.log(data);
       toast.success('Session created successfully');
-    } catch (error) {
-      console.error('Error creating session:', error);
-      toast.error('Failed to create session');
+    } catch (error: any) {
+      // console.error('Error creating session:', error);
+      const bankCreateError = error?.response?.data?.error?.explanation;
+      toast.error(bankCreateError || 'Failed to create session');
     } finally {
       setLoading(false);
     }
@@ -50,9 +53,12 @@ export default function HomePage() {
       setPaymentUrl(newPaymentUrl);
       setSessionUpdated(true);
       toast.success('Session updated successfully');
-    } catch (error) {
-      console.error('Error updating session:', error);
-      toast.error('Failed to update session');
+    } catch (error: any) {
+      // console.error('Error updating session:', error);
+      const bankErrorExplanation = error?.response?.data?.error?.explanation;
+  
+      // Show the detailed error explanation in the toast if available, else show a generic error message
+      toast.error(bankErrorExplanation || 'Failed to update session');
     } finally {
       setLoading(false);
     }

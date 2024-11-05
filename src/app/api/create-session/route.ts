@@ -18,15 +18,14 @@ export async function POST() {
         body: JSON.stringify({}),
       }
     );
-
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error('Error creating session');
+      return NextResponse.json(data, { status: response.status });
     }
 
-    const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error creating session:', error);
+    // console.error('Error creating session:', error);
     return NextResponse.json({ error: 'Session creation failed' }, { status: 500 });
   }
 }

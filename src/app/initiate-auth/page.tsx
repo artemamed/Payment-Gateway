@@ -47,7 +47,7 @@ const NextStep: React.FC = () => {
       }
     } catch (err) {
       setError('An unexpected error occurred.');
-      console.error(err);
+      // console.error(err);
     } finally {
       setLoading(false);
     }
