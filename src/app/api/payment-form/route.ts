@@ -235,7 +235,7 @@ export async function GET(request: Request) {
           </div>
           <div class="payment-card">
             <img src="/artema-logo.png" alt="Logo" class="logo" /> 
-            <h3>Enter Your Credit Card Details</h3>
+            <h3>Enter Your Card Details</h3>
             <div class="card-icons">
               <i class="fab fa-cc-mastercard" aria-hidden="true"></i>
               <i class="fab fa-cc-visa" aria-hidden="true"></i>
